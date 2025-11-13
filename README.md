@@ -147,4 +147,4 @@ Die im Buch enthaltenen Python-Beispiele dürfen **für Lehr- und Lernzwecke** v
 
 ---
 
-Vielen Dank für Ihr Interesse und viel Erfolg beim Lernen und Anwenden der Methoden des quantitativen Portfoliomanagements!
+Vielen Dank für Ihr Interesse und viel Erfolg beim Lernen und Anwenden der Methoden des Factor Investings!
