@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>5&nbsp; Risikobasierte Faktoren: Idiosyncratic Volatility - IVOL – Factor Investing mit Python: Eine Einführung</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./kapitel5.html" rel="next">
+<link href="./kapitel3.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-707d8167ce6003fca903bfe2be84ab7f.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-e0fdce12ac1367d4b47c179a2935dd10.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-74c88ba48ad0bebf983f0ffd06dd1671.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-e0fdce12ac1367d4b47c179a2935dd10.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./kapitel4.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Risikobasierte Faktoren: Idiosyncratic Volatility - IVOL</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Factor Investing mit Python: Eine Einführung</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Willkommen zu „Factor Investing mit Python: Eine Einführung“</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./kapitel1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Grundlagen des Factor Investings</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./kapitel2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Preisbasierte Faktoren: Momentum und Reversal</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./kapitel3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Risikobasierte Faktoren: Total Risk</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./kapitel4.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Risikobasierte Faktoren: Idiosyncratic Volatility - IVOL</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./kapitel5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Risikobasierte Faktoren: Stock Beta</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#hintergrund-und-motivation" id="toc-hintergrund-und-motivation" class="nav-link active" data-scroll-target="#hintergrund-und-motivation"><span class="header-section-number">5.1</span> Hintergrund und Motivation</a></li>
+  <li><a href="#beginn-der-fallstudie" id="toc-beginn-der-fallstudie" class="nav-link" data-scroll-target="#beginn-der-fallstudie"><span class="header-section-number">5.2</span> Beginn der Fallstudie</a>
+  <ul class="collapse">
+  <li><a href="#ivol-als-faktor" id="toc-ivol-als-faktor" class="nav-link" data-scroll-target="#ivol-als-faktor"><span class="header-section-number">5.2.1</span> IVOL als Faktor</a></li>
+  <li><a href="#implementierung-1-gleichgewichtete-dezil-portfolios" id="toc-implementierung-1-gleichgewichtete-dezil-portfolios" class="nav-link" data-scroll-target="#implementierung-1-gleichgewichtete-dezil-portfolios"><span class="header-section-number">5.2.2</span> Implementierung 1: gleichgewichtete Dezil-Portfolios</a></li>
+  <li><a href="#implementierung-2-gewichte-nach-frazzini-and-pedersen-2014" id="toc-implementierung-2-gewichte-nach-frazzini-and-pedersen-2014" class="nav-link" data-scroll-target="#implementierung-2-gewichte-nach-frazzini-and-pedersen-2014"><span class="header-section-number">5.2.3</span> Implementierung 2: Gewichte nach Frazzini and Pedersen (2014)</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Risikobasierte Faktoren: Idiosyncratic Volatility - IVOL</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="hintergrund-und-motivation" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="hintergrund-und-motivation"><span class="header-section-number">5.1</span> Hintergrund und Motivation</h2>
+<p>Das CAPM impliziert, dass das Gesamtrisiko (Renditevarianz) eines Wertpapiers aus zwei Summanden besteht, von denen der erste Summand die Renditeschwankungen des Marktes und der zweite Summand die wertpapierspezifischen Renditeschwankungen beinhaltet.</p>
+<p><span class="math display">\[Var(R_{i,t}) = \beta^{2}_{i} Var(R_{m,t}) + Var(\epsilon_{i})\]</span></p>
+<p><span class="math inline">\(\epsilon_{i}\)</span> kennzeichnet dabei die Renditeresiduen des Wertpapiers <span class="math inline">\(i\)</span>, und <span class="math inline">\(Var(\epsilon_{i})\)</span> wird auch als idiosynkratische Varianz (unsystematisches Risiko) bezeichnet. Die Wurzel daraus ist die idiosynkratische Volatilität (IVOL). Verallgemeinert man den obigen Zusammenhang wird offensichtlich, dass sich IVOL auf Basis unterschiedlicher (Ein-) oder Mehrfaktormodelle berechnen läßt, immer als realisierte (empirische) Standardabweichung der sich aus der Faktorregression ergebenden Renditeresiduen.</p>
+<p>In zwei einflussreichen Arbeiten dokumentieren Ang, Hodrick, Xing und Zhang (2006, 2009) einen negativen Zusammenhang zwischen der idiosynkratischen Volatilität und zukünftigen Aktienrenditen. In dem Maße, in dem die realisierte idiosynkratische Volatilität für die erwartete idiosynkratische Volatilität steht, ist dieses Ergebnis unerwartet (ein „Puzzle“), da traditionelle Asset-Pricing-Theorien (z.B. das CAPM) entweder keinen Zusammenhang zwischen der erwarteten idiosynkratischen Volatilität und erwarteten Renditen vorhersagen wenn Märkte vollständig und friktionslos sind und Anleger sich gut diversifizieren können, oder eine positive Beziehung prognostizieren unter der Annahme, dass Märkte unvollständig und mit Friktionen behaftet sind und Anleger schlecht diversifizierte Portfolios halten.</p>
+<p>Eine bekannte Form der <strong>Low Risk Anomaly</strong> ist folglich das <strong>Idiosyncratic Volatility Puzzle (IVP)</strong>. Hou und Loh (2016) untersuchen empirisch zahlreiche Erklärungsansätze für die Existenz des IVP.</p>
+<p>Wir werden im folgenden eine Faktorstrategie mit IVOL als renditeprognostizierenden Faktor implementieren.</p>
+</section>
+<section id="beginn-der-fallstudie" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="beginn-der-fallstudie"><span class="header-section-number">5.2</span> Beginn der Fallstudie</h2>
+<p>Wir beginnen mit dem Laden der notwendigen Pakete. Zur Durchführung von OLS Regressionen (mit einer Konstanten) importieren wir die Module <code>linear_model</code> und <code>tools</code>aus dem Paket <code>statsmodels</code>.</p>
+<div id="cell-4" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> statsmodels.regression.linear_model <span class="im">as</span> sm</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> statsmodels.tools.tools <span class="im">as</span> sm2</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Wir setzen die IVOL Faktorstrategie am Beispiel des S&amp;P500 Universums um. Zunächst laden wir zwei Datensätze in Form von DataFrames, eines für die täglichen Aktienkurshistorien der S&amp;P500 Mitglieder und eines für die Zeitreihe der Indexwerte des S&amp;P500. Wir mergen beide Datensätze in dem DataFrame <code>joined_df</code> und berechnen diskrete Tagesrenditen.</p>
+<div id="cell-6" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># load of data: df with S&amp;P500 constituents and df with S&amp;P500 index values</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="op">%</span>cd <span class="st">"C:</span><span class="er">\</span><span class="st">Users</span><span class="er">\</span><span class="st">Galina</span><span class="er">\</span><span class="st">Documents</span><span class="er">\</span><span class="st">Thomas</span><span class="er">\</span><span class="st">Python Projekte</span><span class="er">\</span><span class="st">examplefiles"</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>constituents <span class="op">=</span> pd.read_csv(<span class="st">'s&amp;p_500_15112019.csv'</span>, </span>
+<span id="cb2-4"><a href="#cb2-4"></a>                   parse_dates<span class="op">=</span><span class="va">True</span>, index_col<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb2-5"><a href="#cb2-5"></a>index <span class="op">=</span> pd.read_csv(<span class="st">'s&amp;p_500_012000_102019.csv'</span>,parse_dates<span class="op">=</span><span class="va">True</span>, index_col<span class="op">=</span><span class="dv">0</span>) </span>
+<span id="cb2-6"><a href="#cb2-6"></a>sp_index <span class="op">=</span> index[<span class="st">'Adj Close'</span>]</span>
+<span id="cb2-7"><a href="#cb2-7"></a>sp_index.name <span class="op">=</span> <span class="st">'SP_Index'</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="co"># adjustment for different frequency of constituents and index</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>joined_df <span class="op">=</span> pd.merge(constituents, sp_index, how<span class="op">=</span><span class="st">'inner'</span>, on<span class="op">=</span><span class="st">'Date'</span>)</span>
+<span id="cb2-11"><a href="#cb2-11"></a>df_returns <span class="op">=</span> joined_df.pct_change().dropna(how<span class="op">=</span><span class="st">'all'</span>)        </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>C:\Users\Galina\Documents\Thomas\Python Projekte\examplefiles</code></pre>
+</div>
+</div>
+<div id="cell-7" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a>df_returns.head(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ABT</th>
+<th data-quarto-table-cell-role="th">ABBV</th>
+<th data-quarto-table-cell-role="th">ABMD</th>
+<th data-quarto-table-cell-role="th">ACN</th>
+<th data-quarto-table-cell-role="th">ATVI</th>
+<th data-quarto-table-cell-role="th">ADBE</th>
+<th data-quarto-table-cell-role="th">AMD</th>
+<th data-quarto-table-cell-role="th">AAP</th>
+<th data-quarto-table-cell-role="th">AES</th>
+<th data-quarto-table-cell-role="th">AMG</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">WYNN</th>
+<th data-quarto-table-cell-role="th">XEL</th>
+<th data-quarto-table-cell-role="th">XRX</th>
+<th data-quarto-table-cell-role="th">XLNX</th>
+<th data-quarto-table-cell-role="th">XYL</th>
+<th data-quarto-table-cell-role="th">YUM</th>
+<th data-quarto-table-cell-role="th">ZBH</th>
+<th data-quarto-table-cell-role="th">ZION</th>
+<th data-quarto-table-cell-role="th">ZTS</th>
+<th data-quarto-table-cell-role="th">SP_Index</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2017-01-04</th>
+<td>0.007939</td>
+<td>0.014100</td>
+<td>0.030082</td>
+<td>0.002404</td>
+<td>0.019651</td>
+<td>0.006378</td>
+<td>0.000000</td>
+<td>0.008206</td>
+<td>-0.008576</td>
+<td>0.024831</td>
+<td>...</td>
+<td>0.032243</td>
+<td>0.004431</td>
+<td>0.037736</td>
+<td>-0.007279</td>
+<td>0.014904</td>
+<td>0.003639</td>
+<td>0.009194</td>
+<td>0.014359</td>
+<td>0.009703</td>
+<td>0.005722</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2017-01-05</th>
+<td>0.008638</td>
+<td>0.007584</td>
+<td>-0.008035</td>
+<td>-0.014991</td>
+<td>0.015525</td>
+<td>0.016996</td>
+<td>-0.016623</td>
+<td>-0.000698</td>
+<td>-0.012976</td>
+<td>-0.012248</td>
+<td>...</td>
+<td>0.012849</td>
+<td>0.000000</td>
+<td>-0.004196</td>
+<td>-0.012108</td>
+<td>-0.009129</td>
+<td>0.003310</td>
+<td>0.006425</td>
+<td>-0.016210</td>
+<td>-0.003326</td>
+<td>-0.000771</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2017-01-06</th>
+<td>0.027204</td>
+<td>0.000314</td>
+<td>0.005313</td>
+<td>0.011392</td>
+<td>-0.000791</td>
+<td>0.022566</td>
+<td>0.007117</td>
+<td>-0.013090</td>
+<td>0.035933</td>
+<td>-0.002236</td>
+<td>...</td>
+<td>0.010827</td>
+<td>0.002941</td>
+<td>-0.015449</td>
+<td>0.019334</td>
+<td>-0.007010</td>
+<td>0.012097</td>
+<td>0.000095</td>
+<td>0.006498</td>
+<td>0.003152</td>
+<td>0.003517</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2017-01-09</th>
+<td>-0.000981</td>
+<td>0.006584</td>
+<td>0.014642</td>
+<td>-0.011178</td>
+<td>-0.005539</td>
+<td>0.002493</td>
+<td>0.015018</td>
+<td>-0.000589</td>
+<td>-0.024535</td>
+<td>-0.025943</td>
+<td>...</td>
+<td>0.003462</td>
+<td>-0.015152</td>
+<td>-0.005706</td>
+<td>0.000170</td>
+<td>-0.004236</td>
+<td>0.002794</td>
+<td>0.019436</td>
+<td>-0.010837</td>
+<td>-0.002773</td>
+<td>-0.003549</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2017-01-10</th>
+<td>0.013500</td>
+<td>-0.002180</td>
+<td>-0.041585</td>
+<td>0.000522</td>
+<td>0.018037</td>
+<td>-0.002855</td>
+<td>-0.004352</td>
+<td>0.002300</td>
+<td>-0.017346</td>
+<td>-0.001116</td>
+<td>...</td>
+<td>0.022426</td>
+<td>-0.000248</td>
+<td>0.008608</td>
+<td>-0.008974</td>
+<td>-0.004658</td>
+<td>0.005883</td>
+<td>0.062337</td>
+<td>0.015384</td>
+<td>-0.000371</td>
+<td>0.000000</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 503 columns</p>
+</div>
+</div>
+</div>
+<section id="ivol-als-faktor" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="ivol-als-faktor"><span class="header-section-number">5.2.1</span> IVOL als Faktor</h3>
+<p>Wir berechnen die IVOL einer Aktie auf Basis eines Einfaktor-Modells (<em>Single-Index Model</em>), wobei die S&amp;P Indexrendite den (Markt-) Faktor darstellt. Durch die Regression von Aktienrenditen auf die Indexrendite erhalten wir Residuen, deren Streuung (Standardabweichung) die idiosynkratische Volatilität (IVOL) einer Aktie symbolisiert. Wir berechnen die IVOL täglich auf Basis eines rollierenden Zeitfensters dessen Länge wir mit dem Argument <code>window</code> festlegen.</p>
+<p>Lassen Sie uns zunächst eine Funktion <code>idiovola_single()</code> schreiben, die die rollierende IVOL für eine einzelne Aktie berechnet. Das Argument <code>col</code> bezeichnet hierbei die Historie der täglichen Aktienrenditen (y-Variable der Regression) und die Spalte ‘SP_Index’ des DataFrames <code>df_returns</code> enthält die x-Variable (Indexrenditen). <strong>Wichtig:</strong> Wollen wir IVOLs auf Basis von Multifaktoren-Modellen (z.B. dem Fama/French 3-Faktor Modell oder Erweiterungen hiervon) berechnen, muss <code>df_returns</code> entsprechende Zeitreihen der Faktorrenditen enthalten.</p>
+<p>Über die Funktion <code>add_constant</code> fügen wir zum Vektor der Indexrenditen einen gleichlangen Vektor mit “Einsen”, die den Achsenabschnitt (Konstante der Regression) representieren, hinzu.</p>
+<p>Für jedes Zeitfenster der Länge <code>window</code> (von iStart bis iEnd) führen wir über <code>sm.OLS(y-Variable, (Konstante, x-Variable)).fit()</code> eine OLS Regression durch, berechnen die Standardabweichung der sich ergebenden Residuen (std_resids = IVOL) und speichern alle IVOLs in der Liste <code>empty_list</code>.</p>
+<p>Diese Liste wird anschließend in ein einspaltiges DataFrame <code>idio_vola</code> transformiert, wobei der Zeilenindex den Zeitpunkten (<code>df_new['Date']</code>) entspricht, für die jeweils die täglichen rollierenden IVOLs berechnet wurden. <strong>Beachten:</strong> Durch <code>reset_index('Date')</code> wird der Zeilenindex ‘Date’ des DataFrames <code>df_returns</code> in eine normale Spalte transformiert, die dann wiederum über <code>pd.concat()</code> mit Spalten anderer DataFrames verkettet werden kann.</p>
+<div id="cell-10" class="cell" data-execution_count="24">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># function to calculate rolling IVOL for a df of stock and factor returns</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="co"># first a function for a single stock</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">def</span> idiovola_single(col, df_returns, window<span class="op">=</span><span class="dv">250</span>):</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    <span class="co"># col =y-variable; df_returns.SP_Index = x-variable</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>    x1 <span class="op">=</span> df_returns.SP_Index <span class="co"># adjustment necessary for multi-factors!</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>    x2 <span class="op">=</span> sm2.add_constant(x1)</span>
+<span id="cb5-7"><a href="#cb5-7"></a>    empty_list <span class="op">=</span> <span class="bu">list</span>()</span>
+<span id="cb5-8"><a href="#cb5-8"></a>    <span class="co"># rolling window:[iStart,iEnd]</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a>    <span class="cf">for</span> iStart <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(df_returns)<span class="op">-</span>window):</span>
+<span id="cb5-10"><a href="#cb5-10"></a>        iEnd <span class="op">=</span> iStart<span class="op">+</span>window        </span>
+<span id="cb5-11"><a href="#cb5-11"></a>        <span class="co"># Calculate regression residuals std</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a>        reg <span class="op">=</span> sm.OLS(col[iStart:iEnd],x2[iStart:iEnd]).fit()</span>
+<span id="cb5-13"><a href="#cb5-13"></a>        std_resids <span class="op">=</span> np.std(reg.resid)</span>
+<span id="cb5-14"><a href="#cb5-14"></a>        empty_list.append(std_resids)</span>
+<span id="cb5-15"><a href="#cb5-15"></a></span>
+<span id="cb5-16"><a href="#cb5-16"></a>    idio_vola0 <span class="op">=</span> pd.DataFrame(empty_list)</span>
+<span id="cb5-17"><a href="#cb5-17"></a>    df_new <span class="op">=</span> df_returns[window:<span class="bu">len</span>(df_returns)].reset_index(<span class="st">'Date'</span>)</span>
+<span id="cb5-18"><a href="#cb5-18"></a>    idio_vola <span class="op">=</span> pd.concat([df_new[<span class="st">'Date'</span>], idio_vola0], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-19"><a href="#cb5-19"></a>    idio_vola <span class="op">=</span> idio_vola.set_index(<span class="st">'Date'</span>)</span>
+<span id="cb5-20"><a href="#cb5-20"></a>    <span class="cf">return</span> idio_vola</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Nun schreiben wir eine Funktion, die rollierende IVOLs für eine Vielzahl von Aktien berechnet. Das DataFrame <code>df_returns</code> muss herbei zwingend eine Spalte mit der Bezeichnung ‘SP_Index’ enthalten, in der die Indexrenditen stehen. In den übrigen Spalten stehen die Tagesrenditen unseres Anlageuniversums.</p>
+<p>Wir generieren durch den wiederholten Aufruf von <code>idiovola_single()</code> eine Liste <code>dfs</code>, die einspaltige DataFrames mit den jeweiligen IVOL Historien der Aktien enthält. Aus dieser Liste erzeugen wir das finale IVOL DataFrame <code>df_idiovola</code>.</p>
+<div id="cell-12" class="cell" data-execution_count="25">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># now, the function for all stocks</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">def</span> df_idiovola(df_returns):</span>
+<span id="cb6-3"><a href="#cb6-3"></a>    dfs <span class="op">=</span> []</span>
+<span id="cb6-4"><a href="#cb6-4"></a>    <span class="cf">for</span> column <span class="kw">in</span> df_returns.columns:</span>
+<span id="cb6-5"><a href="#cb6-5"></a>        dfs.append(idiovola_single(df_returns[column], df_returns))</span>
+<span id="cb6-6"><a href="#cb6-6"></a></span>
+<span id="cb6-7"><a href="#cb6-7"></a>    df_idiovola <span class="op">=</span> pd.concat(dfs, axis<span class="op">=</span><span class="dv">1</span>).sort_index()    </span>
+<span id="cb6-8"><a href="#cb6-8"></a>    df_idiovola.columns <span class="op">=</span> df_returns.columns</span>
+<span id="cb6-9"><a href="#cb6-9"></a>    df_idiovola.drop(<span class="st">'SP_Index'</span>, axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-10"><a href="#cb6-10"></a>    <span class="cf">return</span> df_idiovola</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Berechnen wir nun die Zeitreihe täglicher rollierender IVOLs für unser S&amp;P500 Anlageuniversum für ein gleitendes Zeitfenster von 250 Handelstagen.</p>
+<div id="cell-14" class="cell" data-execution_count="26">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a>IVOL <span class="op">=</span> df_idiovola(df_returns)</span>
+<span id="cb7-2"><a href="#cb7-2"></a>IVOL.head(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ABT</th>
+<th data-quarto-table-cell-role="th">ABBV</th>
+<th data-quarto-table-cell-role="th">ABMD</th>
+<th data-quarto-table-cell-role="th">ACN</th>
+<th data-quarto-table-cell-role="th">ATVI</th>
+<th data-quarto-table-cell-role="th">ADBE</th>
+<th data-quarto-table-cell-role="th">AMD</th>
+<th data-quarto-table-cell-role="th">AAP</th>
+<th data-quarto-table-cell-role="th">AES</th>
+<th data-quarto-table-cell-role="th">AMG</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">WLTW</th>
+<th data-quarto-table-cell-role="th">WYNN</th>
+<th data-quarto-table-cell-role="th">XEL</th>
+<th data-quarto-table-cell-role="th">XRX</th>
+<th data-quarto-table-cell-role="th">XLNX</th>
+<th data-quarto-table-cell-role="th">XYL</th>
+<th data-quarto-table-cell-role="th">YUM</th>
+<th data-quarto-table-cell-role="th">ZBH</th>
+<th data-quarto-table-cell-role="th">ZION</th>
+<th data-quarto-table-cell-role="th">ZTS</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2018-01-02</th>
+<td>0.007889</td>
+<td>0.010438</td>
+<td>0.013948</td>
+<td>0.007202</td>
+<td>0.017943</td>
+<td>0.012580</td>
+<td>0.035296</td>
+<td>0.024660</td>
+<td>0.013050</td>
+<td>0.010132</td>
+<td>...</td>
+<td>0.007843</td>
+<td>0.016110</td>
+<td>0.006841</td>
+<td>0.011884</td>
+<td>0.012397</td>
+<td>0.009113</td>
+<td>0.007934</td>
+<td>0.011642</td>
+<td>0.012232</td>
+<td>0.008758</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2018-01-03</th>
+<td>0.008003</td>
+<td>0.010442</td>
+<td>0.013915</td>
+<td>0.007202</td>
+<td>0.017936</td>
+<td>0.012579</td>
+<td>0.035424</td>
+<td>0.024952</td>
+<td>0.013032</td>
+<td>0.010187</td>
+<td>...</td>
+<td>0.008065</td>
+<td>0.016213</td>
+<td>0.006856</td>
+<td>0.011713</td>
+<td>0.012366</td>
+<td>0.009132</td>
+<td>0.007945</td>
+<td>0.011709</td>
+<td>0.012272</td>
+<td>0.008780</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2018-01-04</th>
+<td>0.007992</td>
+<td>0.010448</td>
+<td>0.013912</td>
+<td>0.007141</td>
+<td>0.017909</td>
+<td>0.012548</td>
+<td>0.035490</td>
+<td>0.024955</td>
+<td>0.013011</td>
+<td>0.010199</td>
+<td>...</td>
+<td>0.008090</td>
+<td>0.016244</td>
+<td>0.006874</td>
+<td>0.011722</td>
+<td>0.012369</td>
+<td>0.009119</td>
+<td>0.007952</td>
+<td>0.011701</td>
+<td>0.012260</td>
+<td>0.008777</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2018-01-05</th>
+<td>0.007869</td>
+<td>0.010466</td>
+<td>0.013927</td>
+<td>0.007141</td>
+<td>0.017939</td>
+<td>0.012508</td>
+<td>0.035581</td>
+<td>0.025043</td>
+<td>0.012829</td>
+<td>0.010297</td>
+<td>...</td>
+<td>0.008099</td>
+<td>0.016241</td>
+<td>0.006895</td>
+<td>0.011673</td>
+<td>0.012360</td>
+<td>0.009090</td>
+<td>0.007943</td>
+<td>0.011704</td>
+<td>0.012261</td>
+<td>0.008778</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2018-01-08</th>
+<td>0.007874</td>
+<td>0.010471</td>
+<td>0.013879</td>
+<td>0.007121</td>
+<td>0.017956</td>
+<td>0.012503</td>
+<td>0.035621</td>
+<td>0.025045</td>
+<td>0.012749</td>
+<td>0.010214</td>
+<td>...</td>
+<td>0.008095</td>
+<td>0.016237</td>
+<td>0.006843</td>
+<td>0.011673</td>
+<td>0.012648</td>
+<td>0.009114</td>
+<td>0.007937</td>
+<td>0.011616</td>
+<td>0.012277</td>
+<td>0.008785</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 502 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="implementierung-1-gleichgewichtete-dezil-portfolios" class="level3" data-number="5.2.2">
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="implementierung-1-gleichgewichtete-dezil-portfolios"><span class="header-section-number">5.2.2</span> Implementierung 1: gleichgewichtete Dezil-Portfolios</h3>
+<p>Zunächst bringen wir die Aktien über die Methode <code>rank(axis=1, pct=True)</code> in eine Perzentil-Rankordnung gemäß der vergangenen IVOL. Aus den Perzentilen können wir Dezile generieren indem wir mit 10 multiplizieren (<code>mul(10)</code>) und dann auf die nächste ganze Zahl aufrunden (<code>np.ceil</code>). Wollen wir Aktien alternativ in Quintile sortieren, multiplizieren wir einfach mit 5 (<code>mul(5)</code>). <strong>Wichtig:</strong> durch die Festlegung <code>ascending=False</code> werden Aktien mit den höchsten (geringsten) IVOL in Gruppe 1 (10) sortiert. Äquivalent werden bei <code>ascending=True</code> die riskanten Aktien in Gruppe 10 und die risikoarmen Aktien in Gruppe 1 sortiert.</p>
+<p>Wir transformieren das DataFrame <code>rank_df</code> nun in ein DataFrame mit Positionsindikatoren: -1 für eine Short Position in Dezil 1 Aktien, 0 für eine Flat (d.h. keine) Position in Aktien der Dezile 2 bis 9, und 1 für eine Long Position in Dezil 10 Aktien.</p>
+<p><strong>Beachten Sie</strong>: Da wir Long in Dezil 10 und Short in Dezil 1 gehen, implementieren wir durch die Wahl von <code>ascending=True</code> eine High-Risk Strategie, und durch <code>ascending=False</code> eine Low-Risk Strategie!</p>
+<p>Wir führen nun alles zusammen in der Funktion <code>weights_dc</code>.</p>
+<div id="cell-17" class="cell" data-execution_count="33">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># 'df_returns' = DataFrame with security daily returns and factor returns</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">def</span> weights_dc(df_returns):</span>
+<span id="cb8-3"><a href="#cb8-3"></a>    stdev <span class="op">=</span> df_idiovola(df_returns)</span>
+<span id="cb8-4"><a href="#cb8-4"></a>    <span class="co"># Important: False = long in low IVOL stocks</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>    rank_df <span class="op">=</span> np.ceil(stdev.rank(axis<span class="op">=</span><span class="dv">1</span>, pct<span class="op">=</span><span class="va">True</span>, ascending<span class="op">=</span><span class="va">True</span>).mul(<span class="dv">10</span>))</span>
+<span id="cb8-6"><a href="#cb8-6"></a>    <span class="cf">for</span> col <span class="kw">in</span> rank_df.columns:</span>
+<span id="cb8-7"><a href="#cb8-7"></a>        rank_df[col] <span class="op">=</span> np.where(rank_df[col]<span class="op">&gt;</span><span class="dv">9</span>, <span class="dv">1</span>, np.where(rank_df[col]<span class="op">&lt;</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb8-8"><a href="#cb8-8"></a>    </span>
+<span id="cb8-9"><a href="#cb8-9"></a>    <span class="cf">return</span> rank_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Zudem definieren wir wieder unsere zwei <strong>Lambda</strong> Funktionen:</p>
+<pre><code>1. "compound" berechnet aus dem Eingabe-Array x kumulative Mehr-Tagesrenditen;
+2. "daily_sr" berechnet aus einem Array von Tagesrenditen die tägliche Sharpe-Ratio;</code></pre>
+<div id="cell-19" class="cell" data-execution_count="29">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># cumulative returns</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>compound <span class="op">=</span> <span class="kw">lambda</span> x: (<span class="dv">1</span> <span class="op">+</span> x).prod() <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="co"># daily Sharpe Ratio</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>daily_sr <span class="op">=</span> <span class="kw">lambda</span> x: x.mean() <span class="op">/</span> x.std()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Im folgenden berechnen wir zunächst für jeden Handelstag die nicht-normierten Aktiengewichte (-1: Short; 0: Flat; 1: Long) durch Anwendung unserer Funktion <code>weights_dc</code>. Das resultierende DataFrame nennen wir <code>port</code>. Dann legen wir die Anzahl der Handelstage (<em>hold</em>) fest, für die wir das Portfolio halten wollen ohne die Gewichte umzuschichten.</p>
+<p>Im letzten Schritt reduzieren wir die Zeitfrequenz von <code>port</code> auf die Länge (<em>hold</em>) der gewählten Portfoliohalteperiode, setzen die Gewichte auf die Werte die zu Beginn der Halteperiode gelten (über <code>.first()</code>), und wählen <code>.shift(1)</code>, da in t nur die Gewichte die zum Zeitpunkt t-1 bekannt sind implementiert werden können.</p>
+<p>Dann berechnen wir die kumulativen Renditen jeder Aktie für die gewählte Portfoliohaltedauer. Hierzu verwenden wir die vorher definierte Lambda-Funktion <code>compound</code>.</p>
+<p>Danach multiplizieren wir für jede der einzelnen Halteperioden die kumulativen Aktienrenditen mit den Positionsindikatoren (-1, 0, 1), summieren die Produkte über alle Aktien auf, und teilen durch die Summe aller offen (Long und Short) Positionen um eine gleichgewichtete Portfoliorendite zu bekommen. Die resultierende Zeitreihe der kumulativen Portfoliorenditen nennen wir <code>portf_rets</code>. Sie hat dieselbe Zeitfrequenz wie <em>freq</em>, die Portfoliohaltedauer in Anzahl Handelstage. Wenden wir unsere Lambda-Funktion <code>daily_sr</code>auf die Zeitreihe der Portfoliorenditen an und skalieren mit <code>np.sqrt(252/hold)</code> erhalten wir die annualisierte Sharpe-Ratio der Strategie.</p>
+<p>Lassen Sie uns nun die obigen Schritte in der Strategie-Funktion <code>strat_dc</code> zusammenfassen. Wir benötigen ein DataFrame (<em>df_returns</em>) mit den Renditezeitreihen unseres Anlageuniversums und der gewünschten Risikofaktoren zur Berechnung der IVOL, und die Länge der Portfoliohaltedauer (<em>hold</em>).</p>
+<div id="cell-21" class="cell" data-execution_count="31">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># strategy function</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="kw">def</span> strat_dc(df_returns, hold):</span>
+<span id="cb11-3"><a href="#cb11-3"></a>    <span class="co"># calculation of security weights: (-1: short, 0: no, 1: long)</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a>    freq <span class="op">=</span> <span class="st">'</span><span class="sc">%d</span><span class="st">B'</span> <span class="op">%</span> hold <span class="co"># holding period </span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>    port <span class="op">=</span> weights_dc(df_returns) <span class="co"># security weights at business day freq</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a>       </span>
+<span id="cb11-7"><a href="#cb11-7"></a>    <span class="co"># daily returns without index; adjustment if more than one index!</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a>    df_returns0 <span class="op">=</span> df_returns.drop(<span class="st">'SP_Index'</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb11-9"><a href="#cb11-9"></a></span>
+<span id="cb11-10"><a href="#cb11-10"></a>    <span class="co"># adjustment of frequency for returns and weight time series</span></span>
+<span id="cb11-11"><a href="#cb11-11"></a>    temp0 <span class="op">=</span> port.iloc[:, <span class="dv">0</span>]</span>
+<span id="cb11-12"><a href="#cb11-12"></a>    temp0.name <span class="op">=</span> <span class="st">'temp'</span></span>
+<span id="cb11-13"><a href="#cb11-13"></a>    daily_rets <span class="op">=</span> pd.merge(df_returns0, temp0, how<span class="op">=</span><span class="st">'inner'</span>, on<span class="op">=</span><span class="st">'Date'</span>).drop(<span class="st">'temp'</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb11-14"><a href="#cb11-14"></a> </span>
+<span id="cb11-15"><a href="#cb11-15"></a>    <span class="co"># calculation of portfolio returns</span></span>
+<span id="cb11-16"><a href="#cb11-16"></a>    port <span class="op">=</span> port.shift(<span class="dv">1</span>).resample(freq).first() <span class="co"># time series with 'freq' as frequency</span></span>
+<span id="cb11-17"><a href="#cb11-17"></a>    returns <span class="op">=</span> daily_rets.resample(freq).<span class="bu">apply</span>(compound)</span>
+<span id="cb11-18"><a href="#cb11-18"></a>    portf <span class="op">=</span> np.multiply(port, returns) <span class="co"># security returns * position direction (-1, 0, 1)</span></span>
+<span id="cb11-19"><a href="#cb11-19"></a>    <span class="co"># summing position returns divided by number of positions</span></span>
+<span id="cb11-20"><a href="#cb11-20"></a>    portf_rets <span class="op">=</span> portf.<span class="bu">sum</span>(axis <span class="op">=</span> <span class="dv">1</span>)<span class="op">/</span>(portf <span class="op">!=</span> <span class="dv">0</span>).<span class="bu">sum</span>(axis <span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb11-21"><a href="#cb11-21"></a>    </span>
+<span id="cb11-22"><a href="#cb11-22"></a>    <span class="cf">return</span> daily_sr(portf_rets) <span class="op">*</span> np.sqrt(<span class="dv">252</span><span class="op">/</span>hold)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Führen wir beispielhaft die Strategie als eine High-Risk Strategie (<code>ascending=True</code>) mit einer Halteperiode von 20 Handelstagen durch.</p>
+<div id="cell-23" class="cell" data-execution_count="34">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a>strat_dc(df_returns, <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="34">
+<pre><code>0.4300863729003128</code></pre>
+</div>
+</div>
+</section>
+<section id="implementierung-2-gewichte-nach-frazzini-and-pedersen-2014" class="level3" data-number="5.2.3">
+<h3 data-number="5.2.3" class="anchored" data-anchor-id="implementierung-2-gewichte-nach-frazzini-and-pedersen-2014"><span class="header-section-number">5.2.3</span> Implementierung 2: Gewichte nach Frazzini and Pedersen (2014)</h3>
+<p>Zur Implementierung der FP Gewichte erstellen wir das gewohnte (tägliche) DataFrame <code>ranks</code> mit den Perzentil-Rängen der Aktien gemäß ihrer IVOL über eine vergangene lookback (<em>window</em>) Periode. Daraus erstellen wir ein neues DataFrame <code>demeaned</code> mit Rangabweichungen indem wir jeweils den Zeilenmittelwert (<code>ranks.mean(axis=1)</code>) der Ränge vom Rang einer Aktie abziehen. Zusätzlich enthält das DataFrame <code>abs_demeaned</code> die absoluten Rangabweichungen. Wir bekommen die finalen FP Gewichte (DataFrame <code>weights</code>) indem wir die Zeilenwerte von <code>demeaned</code> durch die Hälfte der korrespondierenden Zeilensumme von <code>abs_demeaned</code> teilen.</p>
+<p>Fassen wir diese Schritte nun in der Gewichtsfunktion <code>weights_fp</code> zusammen. Alle weiteren Schritte erfolgen analog zur obigen Vorgehensweise. Die Strategiefunktion nenne ich <code>strat_fp</code>.</p>
+<div id="cell-26" class="cell" data-execution_count="35">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">def</span> weights_fp(df_returns):</span>
+<span id="cb14-2"><a href="#cb14-2"></a>    <span class="co"># weights according to Frazzini and Pedersen (2014), equation (16), p. 9</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a>    stdev <span class="op">=</span> df_idiovola(df_returns)</span>
+<span id="cb14-4"><a href="#cb14-4"></a>    <span class="co"># percentile ranks; "False"= long in stocks with low IVOL!</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a>    ranks <span class="op">=</span> stdev.rank(ascending<span class="op">=</span><span class="va">True</span>, axis<span class="op">=</span><span class="dv">1</span>, pct<span class="op">=</span><span class="va">True</span>) </span>
+<span id="cb14-6"><a href="#cb14-6"></a>    demeaned <span class="op">=</span> ranks.sub(ranks.mean(axis<span class="op">=</span><span class="dv">1</span>), axis<span class="op">=</span><span class="st">'index'</span>) <span class="co"># cross-sectional demeaned</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>    abs_demeaned <span class="op">=</span> <span class="bu">abs</span>(demeaned) </span>
+<span id="cb14-8"><a href="#cb14-8"></a>    <span class="co"># demeaned percentile ranks normalized by 0.5 * cross-sectional sum of abs. demeaned weights</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a>    weights <span class="op">=</span> demeaned.div(<span class="fl">0.5</span> <span class="op">*</span> abs_demeaned.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>), axis<span class="op">=</span><span class="st">'index'</span>)</span>
+<span id="cb14-10"><a href="#cb14-10"></a>    <span class="cf">return</span> weights</span>
+<span id="cb14-11"><a href="#cb14-11"></a></span>
+<span id="cb14-12"><a href="#cb14-12"></a></span>
+<span id="cb14-13"><a href="#cb14-13"></a><span class="co"># strategie returns (main function)</span></span>
+<span id="cb14-14"><a href="#cb14-14"></a><span class="kw">def</span> strat_fp(df_returns, hold):</span>
+<span id="cb14-15"><a href="#cb14-15"></a>    <span class="co"># portfolio weights</span></span>
+<span id="cb14-16"><a href="#cb14-16"></a>    freq <span class="op">=</span> <span class="st">'</span><span class="sc">%d</span><span class="st">B'</span> <span class="op">%</span> hold <span class="co"># holding period in number of business days</span></span>
+<span id="cb14-17"><a href="#cb14-17"></a>    port <span class="op">=</span> weights_fp(df_returns) <span class="co"># weights for each business day</span></span>
+<span id="cb14-18"><a href="#cb14-18"></a>    </span>
+<span id="cb14-19"><a href="#cb14-19"></a>    <span class="co"># daily returns without index; adjustment if more than one index!</span></span>
+<span id="cb14-20"><a href="#cb14-20"></a>    df_returns0 <span class="op">=</span> df_returns.drop(<span class="st">'SP_Index'</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb14-21"><a href="#cb14-21"></a></span>
+<span id="cb14-22"><a href="#cb14-22"></a>    <span class="co"># adjustment of frequency for returns and weight time series</span></span>
+<span id="cb14-23"><a href="#cb14-23"></a>    temp0 <span class="op">=</span> port.iloc[:, <span class="dv">0</span>]</span>
+<span id="cb14-24"><a href="#cb14-24"></a>    temp0.name <span class="op">=</span> <span class="st">'temp'</span></span>
+<span id="cb14-25"><a href="#cb14-25"></a>    daily_rets <span class="op">=</span> pd.merge(df_returns0, temp0, how<span class="op">=</span><span class="st">'inner'</span>, on<span class="op">=</span><span class="st">'Date'</span>).drop(<span class="st">'temp'</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb14-26"><a href="#cb14-26"></a>    </span>
+<span id="cb14-27"><a href="#cb14-27"></a>    <span class="co"># strategy returns, shift(1) to adjust for implementation lag</span></span>
+<span id="cb14-28"><a href="#cb14-28"></a>    port <span class="op">=</span> port.shift(<span class="dv">1</span>).resample(freq).first() <span class="co"># time series with holding period freq</span></span>
+<span id="cb14-29"><a href="#cb14-29"></a>    returns <span class="op">=</span> daily_rets.resample(freq).<span class="bu">apply</span>(compound)</span>
+<span id="cb14-30"><a href="#cb14-30"></a>    port_rets <span class="op">=</span> (port <span class="op">*</span> returns).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>) <span class="co"># weighted sum of security returns </span></span>
+<span id="cb14-31"><a href="#cb14-31"></a>    </span>
+<span id="cb14-32"><a href="#cb14-32"></a>    <span class="cf">return</span> daily_sr(port_rets) <span class="op">*</span> np.sqrt(<span class="dv">252</span><span class="op">/</span>hold)</span>
+<span id="cb14-33"><a href="#cb14-33"></a>    </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Führen wir beispielhaft die Strategie als eine High-Risk Strategie (<code>ascending=True</code>) mit einer Halteperiode von 20 Handelstagen durch.</p>
+<div id="cell-28" class="cell" data-execution_count="36">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a>strat_fp(df_returns,<span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="36">
+<pre><code>0.1792046276890964</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./kapitel3.html" class="pagination-link" aria-label="Risikobasierte Faktoren: Total Risk">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Risikobasierte Faktoren: Total Risk</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./kapitel5.html" class="pagination-link" aria-label="Risikobasierte Faktoren: Stock Beta">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Risikobasierte Faktoren: Stock Beta</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
